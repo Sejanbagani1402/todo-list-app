@@ -2,8 +2,6 @@
 
 A minimalist Flutter application for managing tasks with smooth animations and intuitive UI.
 
-![App Screenshot](screenshots/Screen_recording_20250810_154122.webm)
-
 ## Features
 
 - Add tasks with titles and descriptions
