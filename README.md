@@ -1,16 +1,34 @@
-# app
+# To-Do List App
 
-A new Flutter project.
+A minimalist Flutter application for managing tasks with smooth animations and intuitive UI.
 
-## Getting Started
+![App Screenshot](screenshots/Screen_recording_20250810_154122.webm)
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- Add tasks with titles and descriptions
+- Mark tasks as complete with visual strikethrough
+- Swipe-to-delete functionality
+- Clean Material Design interface
+- Fully responsive layout
+- In-memory state management (no persistence required)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Technical Details
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- **Framework**: Flutter 3.x
+- **State Management**: Built-in `setState`
+- **Architecture**: Simple MVC pattern
+- **Dependencies**: None (100% vanilla Flutter)
+
+## Screenshots
+
+| Home Screen                                     | Add Task Screen                         | Empty State                                 |
+| ----------------------------------------------- | --------------------------------------- | ------------------------------------------- |
+| ![Home](screenshots/home_screen_with_tasks.png) | ![Add](screenshots/add_task_screen.png) | ![Empty](screenshots/home_screen_empty.png) |
+
+## Installation ⚙️
+
+1. Ensure you have Flutter installed:
+   ```bash
+   flutter --version
+   ```
