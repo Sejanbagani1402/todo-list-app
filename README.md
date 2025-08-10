@@ -32,3 +32,15 @@ A minimalist Flutter application for managing tasks with smooth animations and i
    ```bash
    flutter --version
    ```
+2. Clone this repository:
+   ```bash
+   git clone https://github.com/Sejanbagani1402/todo-list-app.git
+   ```
+3. Navigate to project directory:
+   ```bash
+   cd todo-list-app
+   ```
+4. Run the app:
+   ```bash
+   flutter run
+   ```
