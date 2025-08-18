@@ -1,3 +1,4 @@
+import 'package:app/define_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'add_to_do_screen.dart';
@@ -40,6 +41,11 @@ class AppScreenState extends State<AppScreen> {
     }
   }
 
+  void navigateToDefineScreen() async {
+    final route = MaterialPageRoute(builder: (context) => DefineScreen());
+    Navigator.of(context).push(route);
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasTodos = context.watch<TodoListProvider>().todoItems.isNotEmpty;
@@ -68,11 +74,25 @@ class AppScreenState extends State<AppScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: !hasTodos ? buildEmptyState() : buildTodoList(context),
       ),
-      floatingActionButton: FloatingActionButton(
-        elevation: 0,
-        onPressed: navigateToAddTodoScreen,
-        backgroundColor: Colors.black,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            heroTag: "addTodoScreen",
+            elevation: 0,
+            onPressed: navigateToAddTodoScreen,
+            backgroundColor: Colors.black,
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
+          SizedBox(height: 35),
+          FloatingActionButton(
+            heroTag: "DefineScreen",
+            elevation: 0,
+            onPressed: navigateToDefineScreen,
+            backgroundColor: Colors.black,
+            child: const Icon(Icons.book, color: Colors.white),
+          ),
+        ],
       ),
     );
   }
