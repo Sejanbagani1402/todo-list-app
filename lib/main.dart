@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'todo_item.dart';
+import 'package:provider/provider.dart';
 import 'add_to_do_screen.dart';
+import 'todo_list_provider.dart';
 
 void main() {
   debugProfileBuildsEnabled = true;
@@ -11,7 +12,12 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: AppScreen());
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => TodoListProvider()),
+      ],
+      child: MaterialApp(debugShowCheckedModeBanner: true, home: AppScreen()),
+    );
   }
 }
 
@@ -22,38 +28,21 @@ class AppScreen extends StatefulWidget {
 }
 
 class AppScreenState extends State<AppScreen> {
-  final List<TodoItem> todoItems = [];
-  void addTodoItem(String title, String description) {
-    setState(() {
-      todoItems.add(
-        TodoItem(title: title, description: description, isCompleted: false),
-      );
-    });
-  }
-
-  void toggleTodoCompletion(int index) {
-    setState(() {
-      todoItems[index].isCompleted = !todoItems[index].isCompleted;
-    });
-  }
-
-  void deleteTodoItem(int index) {
-    setState(() {
-      todoItems.removeAt(index);
-    });
-  }
-
   void navigateToAddTodoScreen() async {
     final route = MaterialPageRoute(builder: (context) => AddTodoScreen());
     Navigator.of(context).push(route);
     final result = await route.popped;
     if (result != null && result is Map<String, String>) {
-      addTodoItem(result["title"]!, result["description"] ?? "");
+      context.read<TodoListProvider>().addTodoItem(
+        result["title"]!,
+        result["description"] ?? "",
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final hasTodos = context.watch<TodoListProvider>().todoItems.isNotEmpty;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
@@ -77,7 +66,7 @@ class AppScreenState extends State<AppScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: todoItems.isEmpty ? buildEmptyState() : buildTodoList(),
+        child: !hasTodos ? buildEmptyState() : buildTodoList(context),
       ),
       floatingActionButton: FloatingActionButton(
         elevation: 0,
@@ -106,109 +95,123 @@ class AppScreenState extends State<AppScreen> {
       ],
     ),
   );
-  Widget buildTodoList() => ListView.separated(
-    physics: BouncingScrollPhysics(),
-    itemCount: todoItems.length,
-    addAutomaticKeepAlives: true,
-    addRepaintBoundaries: true,
-    separatorBuilder: (context, index) => const SizedBox(height: 8),
-    itemBuilder: (context, index) {
-      final item = todoItems[index];
-      return Dismissible(
-        key: Key(item.title),
-        background: Container(
-          decoration: BoxDecoration(
-            color: Colors.red[100],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.only(right: 20),
-          child: Icon(Icons.delete_outline, color: Colors.red[300]),
-        ),
-        onDismissed: (direction) => deleteTodoItem(index),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () => toggleTodoCompletion(index),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0x08000000),
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+  Widget buildTodoList(BuildContext context) {
+    return Consumer<TodoListProvider>(
+      builder: (context, provider, _) {
+        final todoItems = provider.todoItems;
+        return ListView.separated(
+          physics: BouncingScrollPhysics(),
+          itemCount: todoItems.length,
+          addAutomaticKeepAlives: true,
+          addRepaintBoundaries: true,
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
+          itemBuilder: (context, index) {
+            final item = todoItems[index];
+            return Dismissible(
+              key: Key(item.title),
+              background: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 20),
+                child: Icon(Icons.delete_outline, color: Colors.red[300]),
               ),
-              child: Row(
-                children: [
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeOut,
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: item.isCompleted
-                          ? Colors.blue[100]
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: item.isCompleted
-                            ? Colors.blue[300]!
-                            : Colors.grey[300]!,
-                        width: 1.5,
-                      ),
+              onDismissed: (direction) => provider.deleteTodoItem(index),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: () => provider.toggleTodoCompletion(index),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
                     ),
-                    child: item.isCompleted
-                        ? Icon(Icons.check, size: 16, color: Colors.blue[600])
-                        : null,
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.title,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w500,
-                            color: item.isCompleted
-                                ? Colors.grey[500]
-                                : Colors.black87,
-                            decoration: item.isCompleted
-                                ? TextDecoration.lineThrough
-                                : null,
-                            decorationThickness: 2,
-                          ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x08000000),
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
                         ),
-                        if (item.description.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              item.description,
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: item.isCompleted
-                                    ? Colors.grey[400]
-                                    : Colors.grey[600],
-                                height: 1.4,
-                              ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: item.isCompleted
+                                ? Colors.blue[100]
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: item.isCompleted
+                                  ? Colors.blue[300]!
+                                  : Colors.grey[300]!,
+                              width: 1.5,
                             ),
                           ),
+                          child: item.isCompleted
+                              ? Icon(
+                                  Icons.check,
+                                  size: 16,
+                                  color: Colors.blue[600],
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                  color: item.isCompleted
+                                      ? Colors.grey[500]
+                                      : Colors.black87,
+                                  decoration: item.isCompleted
+                                      ? TextDecoration.lineThrough
+                                      : null,
+                                  decorationThickness: 2,
+                                ),
+                              ),
+                              if (item.description.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(
+                                    item.description,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: item.isCompleted
+                                          ? Colors.grey[400]
+                                          : Colors.grey[600],
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      );
-    },
-  );
+            );
+          },
+        );
+      },
+    );
+  }
 }
