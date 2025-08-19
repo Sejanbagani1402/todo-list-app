@@ -8,8 +8,6 @@ class ChooseLanguageScreen extends StatefulWidget {
 }
 
 class ChooseLanguageScreenPage extends State<ChooseLanguageScreen> {
-  void setLanguageToEnglish() async {}
-  void setLanguageToHindi() async {}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
