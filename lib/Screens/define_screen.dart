@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import "package:http/http.dart" as http;
-import '../models/definition.dart';
 import 'package:app/Services/dictionary_api_service.dart';
-import "dart:convert";
 
 class DefineScreen extends StatefulWidget {
   const DefineScreen({super.key});
