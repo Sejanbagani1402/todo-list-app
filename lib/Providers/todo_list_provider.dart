@@ -1,4 +1,4 @@
-import "package:app/todo_item.dart";
+import "package:app/models/todo_item.dart";
 import "package:flutter/material.dart";
 
 class TodoListProvider extends ChangeNotifier {

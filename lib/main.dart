@@ -1,8 +1,8 @@
-import 'package:app/define_screen.dart';
+import 'package:app/Screens/define_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'add_to_do_screen.dart';
-import 'todo_list_provider.dart';
+import 'Screens/add_to_do_screen.dart';
+import 'Providers/todo_list_provider.dart';
 
 void main() {
   debugProfileBuildsEnabled = true;
