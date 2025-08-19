@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class AddTodoScreen extends StatefulWidget {
@@ -29,8 +30,8 @@ class AddTodoScreenState extends State<AddTodoScreen> {
             padding: EdgeInsets.only(bottom: 8),
             child: AppBar(
               title: Center(
-                child: const Text(
-                  "Add your Task",
+                child: Text(
+                  "add_your_task".tr(),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ),
@@ -62,7 +63,7 @@ class AddTodoScreenState extends State<AddTodoScreen> {
                     horizontal: 20,
                     vertical: 18,
                   ),
-                  hintText: "Task Title",
+                  hintText: "task_title".tr(),
                   hintStyle: TextStyle(color: Colors.grey[400]),
                 ),
                 style: TextStyle(fontSize: 17),
@@ -87,7 +88,7 @@ class AddTodoScreenState extends State<AddTodoScreen> {
                     horizontal: 20,
                     vertical: 18,
                   ),
-                  hintText: "Description (optional)",
+                  hintText: "description_optional".tr(),
                   hintStyle: TextStyle(color: Colors.grey[400]),
                 ),
                 style: TextStyle(fontSize: 16),
@@ -115,7 +116,7 @@ class AddTodoScreenState extends State<AddTodoScreen> {
                     elevation: 0,
                   ),
                   child: Text(
-                    "Add Task",
+                    "add_task".tr(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,

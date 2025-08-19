@@ -1,12 +1,26 @@
+import 'package:app/Screens/SplashScreen/splash_screen.dart';
+import 'package:app/Screens/choose_language_screen.dart';
 import 'package:app/Screens/define_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'Screens/add_to_do_screen.dart';
 import 'Providers/todo_list_provider.dart';
 
-void main() {
+void main() async {
   debugProfileBuildsEnabled = true;
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale("en"), Locale("hi")],
+      path:
+          "assets/translations", //A:\todo-list-app\asstes\translations\en.json
+      fallbackLocale: const Locale("en"),
+      saveLocale: true,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +31,17 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => TodoListProvider()),
       ],
-      child: MaterialApp(debugShowCheckedModeBanner: true, home: AppScreen()),
+      child: MaterialApp(
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
+        debugShowCheckedModeBanner: true,
+        home: SplashScreen(),
+        routes: {
+          '/home': (context) => AppScreen(),
+          '/choose-language': (context) => ChooseLanguageScreen(),
+        },
+      ),
     );
   }
 }
@@ -58,8 +82,8 @@ class AppScreenState extends State<AppScreen> {
             padding: const EdgeInsets.only(bottom: 8),
             child: AppBar(
               title: Center(
-                child: const Text(
-                  "To do List",
+                child: Text(
+                  "todo_list".tr(),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ),
@@ -109,7 +133,7 @@ class AppScreenState extends State<AppScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          "No task yet",
+          "no_task".tr(),
           style: TextStyle(fontSize: 24, color: Colors.grey[500]),
         ),
       ],

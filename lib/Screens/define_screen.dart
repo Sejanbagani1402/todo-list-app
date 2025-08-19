@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:app/Services/dictionary_api_service.dart';
 
@@ -39,14 +40,14 @@ class DefineScreenPage extends State<DefineScreen> {
           });
         } else {
           setState(() {
-            meanings = ["Error: Unable to fetch definition"];
+            meanings = ["error_fetch".tr()];
             isWordDefined = false;
           });
         }
       }
     } catch (e) {
       setState(() {
-        meanings = ["An error occurred: $e"];
+        meanings = ["${"error_generic".tr()}: $e"];
         isWordDefined = false;
       });
     } finally {
@@ -73,8 +74,8 @@ class DefineScreenPage extends State<DefineScreen> {
             padding: EdgeInsets.only(bottom: 8),
             child: AppBar(
               title: Center(
-                child: const Text(
-                  "Define the word",
+                child: Text(
+                  "define_word".tr(),
                   style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ),
@@ -93,7 +94,7 @@ class DefineScreenPage extends State<DefineScreen> {
             controller: wordController,
             decoration: InputDecoration(
               label: Text(
-                "Enter your word",
+                "enter_word".tr(),
                 style: TextStyle(color: Colors.black87),
               ),
               filled: true,
@@ -109,7 +110,7 @@ class DefineScreenPage extends State<DefineScreen> {
           if (!isLoading && meanings.isNotEmpty)
             Center(
               child: Text(
-                "Definition of the word",
+                "definition_of_word".tr(),
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -143,8 +144,8 @@ class DefineScreenPage extends State<DefineScreen> {
                 ),
                 elevation: 0,
               ),
-              child: const Text(
-                "Define the Word",
+              child: Text(
+                "define_button".tr(),
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 16,

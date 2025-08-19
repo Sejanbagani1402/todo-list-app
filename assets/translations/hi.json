@@ -1,0 +1,21 @@
+{
+  "choose_language": "कृपया भाषा चुनें।",
+  "english": "अंग्रेज़ी",
+  "hindi": "हिन्दी",
+  "todo_list": "टू-डू सूची",
+  "no_task": "अभी कोई कार्य नहीं",
+  "add_task": "कार्य जोड़ें",
+  "define_screen": "परिभाषाएँ",
+  "add_your_task": "अपना कार्य जोड़ें",
+  "define_message": "यहाँ आप कार्यों के अर्थ और व्याख्या देख सकते हैं।",
+  "task_title": "कार्य शीर्षक",
+  "description_optional": "विवरण (वैकल्पिक)",
+  "save_task": "कार्य सहेजें",
+
+  "define_word": "शब्द को परिभाषित करें",
+  "enter_word": "अपना शब्द दर्ज करें",
+  "definition_of_word": "शब्द की परिभाषा",
+  "define_button": "शब्द परिभाषित करें",
+  "error_fetch": "त्रुटि: परिभाषा प्राप्त नहीं हो सकी",
+  "error_generic": "एक त्रुटि हुई"
+}

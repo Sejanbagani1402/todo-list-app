@@ -1,0 +1,21 @@
+{
+  "choose_language": "Please choose the language.",
+  "english": "English",
+  "hindi": "Hindi",
+  "todo_list": "To do List",
+  "no_task": "No task yet",
+  "add_task": "Add Task",
+  "define_screen": "Definitions",
+  "add_your_task": "Add your task",
+  "define_message": "Here you can find the meaning and explanations of tasks.",
+  "task_title": "Task Title",
+  "description_optional": "Description (optional)",
+  "save_task": "Save Task",
+
+  "define_word": "Define the word",
+  "enter_word": "Enter your word",
+  "definition_of_word": "Definition of the word",
+  "define_button": "Define the Word",
+  "error_fetch": "Error: Unable to fetch definition",
+  "error_generic": "An error occurred"
+}
