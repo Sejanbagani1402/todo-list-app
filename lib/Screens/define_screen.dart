@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 import '../models/definition.dart';
+import 'package:app/Services/dictionary_api_service.dart';
 import "dart:convert";
 
 class DefineScreen extends StatefulWidget {
@@ -12,52 +13,43 @@ class DefineScreen extends StatefulWidget {
 class DefineScreenPage extends State<DefineScreen> {
   final wordController = TextEditingController();
   bool isWordDefined = false;
-  String wordDefinition = "";
+  List<String> meanings = [];
   bool isLoading = false;
   Future<void> fetchDefinition() async {
-    final word = wordController.text.trim().toLowerCase();
-    if (word.isEmpty) {
-      setState(() {
-        wordDefinition = "Please enter a word";
-        isWordDefined = false;
-      });
-      return;
-    }
-    final url = "https://api.dictionaryapi.dev/api/v2/entries/en/$word";
+    final word = wordController.text;
+    if (word.isEmpty) return;
     setState(() {
       isLoading = true;
-      wordDefinition = "";
+      meanings.clear();
     });
+    // final url = "https://api.dictionaryapi.dev/api/v2/entries/en/$word";
     try {
-      final response = await http.get(Uri.parse(url));
+      final response = await DictionaryAPIService.instance.request(
+        "/$word",
+        DioMethod.get,
+      );
       if (response.statusCode == 200) {
-        final List data = jsonDecode(response.body);
+        final data = response.data;
         final wordData = data[0];
-        final meanings = wordData["meanings"] as List;
-        final List<Definition> definitions = meanings
-            .expand((m) => (m['definitions'] as List))
-            .map((d) => Definition.fromJson(d))
-            .take(2)
-            .toList();
-        final allDefinitions = definitions
-            .map((def) => def.definition)
-            .where((d) => d.isNotEmpty)
-            .join("\n\n");
-        setState(() {
-          wordDefinition = allDefinitions.isNotEmpty
-              ? allDefinitions
-              : "No definition found";
-          isWordDefined = allDefinitions.isNotEmpty;
-        });
-      } else {
-        setState(() {
-          wordDefinition = "Error: Word not found on API server.";
-          isWordDefined = false;
-        });
+        if (wordData["meanings"] != null && wordData["meanings"].isNotEmpty) {
+          final List defs = wordData["meanings"][0]["definitions"];
+          setState(() {
+            meanings = defs
+                .take(3)
+                .map<String>((d) => d["definition"].toString())
+                .toList();
+            isWordDefined = true;
+          });
+        } else {
+          setState(() {
+            meanings = ["Error: Unable to fetch definition"];
+            isWordDefined = false;
+          });
+        }
       }
     } catch (e) {
       setState(() {
-        wordDefinition = "An error occurred: $e";
+        meanings = ["An error occurred: $e"];
         isWordDefined = false;
       });
     } finally {
@@ -115,11 +107,30 @@ class DefineScreenPage extends State<DefineScreen> {
               ),
             ),
           ),
-          SizedBox(height: 200),
-          Text(
-            wordDefinition,
-            style: TextStyle(fontSize: 18, color: Colors.black),
-            textAlign: TextAlign.center,
+          SizedBox(height: 20),
+          if (isLoading) const CircularProgressIndicator(color: Colors.black),
+          if (!isLoading && meanings.isNotEmpty)
+            Center(
+              child: Text(
+                "Definition of the word",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: meanings.length,
+              itemBuilder: (context, index) => Card(
+                color: Colors.white,
+                margin: EdgeInsets.symmetric(vertical: 8.0),
+                child: Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text(
+                    "${index + 1}. ${meanings[index]}",
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
           ),
           const Spacer(),
           Container(
