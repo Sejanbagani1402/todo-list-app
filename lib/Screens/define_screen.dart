@@ -1,6 +1,6 @@
+import 'package:app/Services/dictionary_api_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:app/Services/dictionary_api_service.dart';
 
 class DefineScreen extends StatefulWidget {
   const DefineScreen({super.key});
@@ -13,6 +13,7 @@ class DefineScreenPage extends State<DefineScreen> {
   bool isWordDefined = false;
   List<String> meanings = [];
   bool isLoading = false;
+  final dictionaryApi = DictionaryApiService();
   Future<void> fetchDefinition() async {
     final word = wordController.text;
     if (word.isEmpty) return;
@@ -20,30 +21,16 @@ class DefineScreenPage extends State<DefineScreen> {
       isLoading = true;
       meanings.clear();
     });
-    // final url = "https://api.dictionaryapi.dev/api/v2/entries/en/$word";
     try {
-      final response = await DictionaryAPIService.instance.request(
-        "/$word",
-        DioMethod.get,
-      );
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final wordData = data[0];
-        if (wordData["meanings"] != null && wordData["meanings"].isNotEmpty) {
-          final List defs = wordData["meanings"][0]["definitions"];
-          setState(() {
-            meanings = defs
-                .take(3)
-                .map<String>((d) => d["definition"].toString())
-                .toList();
-            isWordDefined = true;
-          });
-        } else {
-          setState(() {
-            meanings = ["error_fetch".tr()];
-            isWordDefined = false;
-          });
-        }
+      final definitions = await dictionaryApi.getDefinitions(word);
+      if (definitions.isNotEmpty) {
+        setState(() {
+          meanings = definitions
+              .take(3)
+              .map((d) => d.definition as String)
+              .toList();
+          isWordDefined = true;
+        });
       }
     } catch (e) {
       setState(() {

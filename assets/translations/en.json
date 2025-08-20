@@ -17,5 +17,8 @@
   "definition_of_word": "Definition of the word",
   "define_button": "Define the Word",
   "error_fetch": "Error: Unable to fetch definition",
-  "error_generic": "An error occurred"
+  "error_generic": "An error occurred",
+
+  "mobile_number": "Enter your mobile number",
+  "submit_button": "Submit Button"
 }

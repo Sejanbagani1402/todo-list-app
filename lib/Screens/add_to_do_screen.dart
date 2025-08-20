@@ -1,3 +1,5 @@
+import 'package:app/widgets/utils/custom_black_button.dart';
+import 'package:app/widgets/utils/custom_text_field.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +19,15 @@ class AddTodoScreenState extends State<AddTodoScreen> {
     titleController.dispose();
     descriptionController.dispose();
     super.dispose();
+  }
+
+  formValidate() async {
+    if (formKey.currentState!.validate()) {
+      Navigator.pop(context, {
+        "title": titleController.text.trim(),
+        "description": descriptionController.text.trim(),
+      });
+    } else {}
   }
 
   @override
@@ -75,55 +86,15 @@ class AddTodoScreenState extends State<AddTodoScreen> {
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
+              CustomTextField(
                 controller: descriptionController,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 18,
-                  ),
-                  hintText: "description_optional".tr(),
-                  hintStyle: TextStyle(color: Colors.grey[400]),
-                ),
-                style: TextStyle(fontSize: 16),
+                text: "description_optional",
                 maxLines: 4,
               ),
               const Spacer(),
-              Container(
-                width: double.infinity,
-                margin: EdgeInsets.only(bottom: 24),
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      Navigator.pop(context, {
-                        "title": titleController.text.trim(),
-                        "description": descriptionController.text.trim(),
-                      });
-                    } else {}
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black87,
-                    padding: EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    "add_task".tr(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+              CustomBlackButton(
+                text: "add_task",
+                callback: () => formValidate(),
               ),
             ],
           ),
