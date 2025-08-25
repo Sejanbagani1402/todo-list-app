@@ -1,6 +1,9 @@
 import 'package:app/Providers/todo_list_provider.dart';
 import 'package:app/screens/add_to_do_screen.dart';
+import 'package:app/screens/login_screen/login_screen.dart';
+import 'package:app/screens/notes_screen/notes_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:app/screens/define_screen.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  final FirebaseAuth auth = FirebaseAuth.instance;
   void navigateToAddTodoScreen() async {
     final route = MaterialPageRoute(builder: (context) => AddTodoScreen());
     Navigator.of(context).push(route);
@@ -29,6 +33,11 @@ class HomeScreenState extends State<HomeScreen> {
     Navigator.of(context).push(route);
   }
 
+  void navigateToNotesScreen() async {
+    final route = MaterialPageRoute(builder: (context) => NotesScreen());
+    Navigator.of(context).push(route);
+  }
+
   @override
   Widget build(BuildContext context) {
     final hasTodos = context.watch<TodoListProvider>().todoItems.isNotEmpty;
@@ -40,10 +49,59 @@ class HomeScreenState extends State<HomeScreen> {
           child: Container(
             padding: const EdgeInsets.only(bottom: 8),
             child: AppBar(
-              title: Center(
-                child: Text(
-                  "todo_list".tr(),
-                  style: TextStyle(fontWeight: FontWeight.w500),
+              automaticallyImplyLeading: false,
+              actions: <Widget>[
+                IconButton(
+                  onPressed: () async {
+                    try {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          backgroundColor: Colors.white,
+                          title: const Text("Are you sure?"),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text("Cancel"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await auth.signOut();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("You have to login again."),
+                                  ),
+                                );
+                              },
+                              child: Text("Log out"),
+                            ),
+                          ],
+                        ),
+                      );
+                    } catch (e) {
+                      // ignore: avoid_print
+                      print(e.toString());
+                    }
+                  },
+                  icon: Icon(Icons.logout_outlined),
+                ),
+              ],
+              title: Padding(
+                padding: const EdgeInsets.only(left: 38.0),
+                child: Center(
+                  child: Text(
+                    "todo_list".tr(),
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
                 ),
               ),
               elevation: 0,
@@ -74,6 +132,14 @@ class HomeScreenState extends State<HomeScreen> {
             onPressed: navigateToDefineScreen,
             backgroundColor: Colors.black,
             child: const Icon(Icons.book, color: Colors.white),
+          ),
+          SizedBox(height: 35),
+          FloatingActionButton(
+            heroTag: "NotesScreen",
+            elevation: 0,
+            onPressed: navigateToNotesScreen,
+            backgroundColor: Colors.black,
+            child: const Icon(Icons.notes_outlined, color: Colors.white),
           ),
         ],
       ),
@@ -110,6 +176,7 @@ class HomeScreenState extends State<HomeScreen> {
           separatorBuilder: (context, index) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final item = todoItems[index];
+            final isCompleted = item.asTodoItem?.isCompleted ?? false;
             return Dismissible(
               key: Key(item.title),
               background: Container(
@@ -151,18 +218,18 @@ class HomeScreenState extends State<HomeScreen> {
                           width: 24,
                           height: 24,
                           decoration: BoxDecoration(
-                            color: item.isCompleted
+                            color: isCompleted
                                 ? Colors.blue[100]
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: item.isCompleted
+                              color: isCompleted
                                   ? Colors.blue[300]!
                                   : Colors.grey[300]!,
                               width: 1.5,
                             ),
                           ),
-                          child: item.isCompleted
+                          child: isCompleted
                               ? Icon(
                                   Icons.check,
                                   size: 16,
@@ -180,23 +247,23 @@ class HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w500,
-                                  color: item.isCompleted
+                                  color: isCompleted
                                       ? Colors.grey[500]
                                       : Colors.black87,
-                                  decoration: item.isCompleted
+                                  decoration: isCompleted
                                       ? TextDecoration.lineThrough
                                       : null,
                                   decorationThickness: 2,
                                 ),
                               ),
-                              if (item.description.isNotEmpty)
+                              if (item.content.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(
-                                    item.description,
+                                    item.content,
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: item.isCompleted
+                                      color: isCompleted
                                           ? Colors.grey[400]
                                           : Colors.grey[600],
                                       height: 1.4,

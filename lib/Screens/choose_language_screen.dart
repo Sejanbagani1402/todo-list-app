@@ -9,6 +9,7 @@ class ChooseLanguageScreen extends StatefulWidget {
 }
 
 class ChooseLanguageScreenPage extends State<ChooseLanguageScreen> {
+  // ignore: strict_top_level_inference
   saveAndNavigateToLogin(Locale locale) async {
     await context.setLocale(locale);
     Navigator.pushReplacementNamed(context, "/login");

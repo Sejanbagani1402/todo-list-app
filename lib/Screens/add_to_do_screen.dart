@@ -21,6 +21,7 @@ class AddTodoScreenState extends State<AddTodoScreen> {
     super.dispose();
   }
 
+  // ignore: strict_top_level_inference
   formValidate() async {
     if (formKey.currentState!.validate()) {
       Navigator.pop(context, {

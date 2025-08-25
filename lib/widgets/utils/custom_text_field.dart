@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   final String text;
   final TextEditingController controller;
+  // ignore: prefer_typing_uninitialized_variables, strict_top_level_inference
   final maxLines;
   const CustomTextField({
     super.key,
